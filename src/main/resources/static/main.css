@@ -28,9 +28,14 @@ a{
     width:10%;
     height:800px;
     text-align: center;
+    overflow:auto;
 }
 
 .content {
     background: lightseagreen;
     width:90%;
+}
+
+.now {
+    background: lightseagreen;
 }

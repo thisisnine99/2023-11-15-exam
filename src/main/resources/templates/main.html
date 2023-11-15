@@ -4,28 +4,57 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="/main.css">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.0.7/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 <div class="wrap">
-    <div class="logo">logo</div>
+    <div class="logo">
+        <a href="/">logo</a>
+    </div>
     <div class="content-wrap">
+        <!-- 노트목록 -->
         <div class="side-menu">
-            <!--            3. 템플릿에서 게시물 목록 출력-->
+            <ul class="menu rounded-box">
+                <li th:replace="~{/fragments :: tree(${targetNote}, ${noteList})}"></li>
+            </ul>
+            <div>
+                <form action="/note/create" method="post">
+                    <input type="submit" value="추가">
+                </form>
+            </div>
+            <div>
+                <form action="/note/delete" method="post">
+                    <input type="hidden" name="targetNoteid" th:value="${targetNote.id}">
+                    <input type="button" value="삭제" onclick="OnclickConfirm(this, DELETE)">
+                </form>
+            </div>
+            <div>
+                <form action="/note/groupAdd" method="post">
+                    <input type="hidden" name="targetNoteid" th:value="${targetNote.id}">
+                    <input type="submit" value="그룹추가">
+                </form>
+            </div>
+        </div>
+        <!-- 포스트목록 -->
+        <div class="side-menu">
             <ul>
-                <li th:each="post : ${postList}">
-                    <a th:href="@{|/detail/${post.id}|}" th:text="${post.title}"></a>
+                <li th:each="post : ${postList}" th:class="${post.id == targetPost.id} ? 'now' : ''">
+                    <a th:href="@{|/post/${post.id}|}" th:text="${post.title}"></a>
                 </li>
             </ul>
             <div>
-                <form action="/write" method="post">
+                <form action="/post/write" method="post">
+                    <input type="hidden" name="targetNoteid" th:value="${targetNote.id}">
                     <input type="submit" value="추가">
                 </form>
             </div>
         </div>
+        <!-- 중앙컨텐츠 -->
         <div class="content">
-            <form action="/update" method="post">
+            <form action="/post/update" method="post">
                 <div>
-                    <input type="hidden" name="id" th:value="${targetPost.id}">
+                    <input type="hidden" name="targetPostid" th:value="${targetPost.id}">
                 </div>
                 <div>
                     <input type="text" name="title" th:value="${targetPost.title}">
@@ -34,11 +63,28 @@
                     <textarea name="content" cols="30" rows="10" th:text="${targetPost.content}"></textarea>
                 </div>
                 <div>
-                    <input type="submit" value="수정">
+                    <input type="submit" value="수정" onclick="OnclickConfirm(this, UPDATE)">
                 </div>
+            </form>
+            <form action="/post/delete" method="post">
+                <input type="hidden" name="targetPostid" th:value="${targetPost.id}">
+                <input type="button" value="삭제" onclick="OnclickConfirm(this, DELETE)">
             </form>
         </div>
     </div>
 </div>
+<script>
+    DELETE = {
+        'msg' : '삭제하시겠습니까?'
+    }
+    UPDATE = {
+        'msg' : '수정하시겠습니까?'
+    }
+    function OnclickConfirm(input, action) {
+        if(confirm(action.msg)) {
+            input.form.submit();
+        }
+    }
+</script>
 </body>
 </html>
